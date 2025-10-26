@@ -1,4 +1,4 @@
-import apiRequest from './api';
+import api from './api';
 import authService from './authService';
 
 // Serviço de usuário
@@ -15,19 +15,13 @@ const userService = {
     }
 
     try {
-      const data = await apiRequest('/user/profile', {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-
-      return data;
+      const response = await api.get('/user/profile');
+      return response.data;
     } catch (error) {
       console.error('Erro ao buscar perfil:', error);
       
       // Se o token for inválido, faz logout
-      if (error.status === 401) {
+      if (error.response?.status === 401) {
         authService.logout();
       }
       
@@ -48,13 +42,8 @@ const userService = {
     }
 
     try {
-      const data = await apiRequest('/user/profile', {
-        method: 'PUT',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-        body: JSON.stringify(userData),
-      });
+      const response = await api.put('/user/profile', userData);
+      const data = response.data;
 
       // Atualiza os dados no localStorage
       if (data.user) {

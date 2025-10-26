@@ -1,4 +1,4 @@
-import apiRequest from './api';
+import api from './api';
 
 // Serviço de autenticação
 const authService = {
@@ -11,10 +11,8 @@ const authService = {
    */
   async login(credentials) {
     try {
-      const data = await apiRequest('/auth/login', {
-        method: 'POST',
-        body: JSON.stringify(credentials),
-      });
+      const response = await api.post('/auth/login', credentials);
+      const data = response.data;
 
       // Salva o token no localStorage
       if (data.token) {
@@ -39,10 +37,8 @@ const authService = {
    */
   async register(userData) {
     try {
-      const data = await apiRequest('/auth/register', {
-        method: 'POST',
-        body: JSON.stringify(userData),
-      });
+      const response = await api.post('/auth/register', userData);
+      const data = response.data;
 
       // Salva o token no localStorage
       if (data.token) {
