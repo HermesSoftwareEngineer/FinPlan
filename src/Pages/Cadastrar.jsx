@@ -1,7 +1,9 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services';
 
 function Cadastrar() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -11,6 +13,8 @@ function Cadastrar() {
   });
 
   const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+  const [apiError, setApiError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -22,6 +26,7 @@ function Cadastrar() {
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: '' }));
     }
+    if (apiError) setApiError('');
   };
 
   const validate = () => {
@@ -54,13 +59,35 @@ function Cadastrar() {
     return newErrors;
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const newErrors = validate();
     
     if (Object.keys(newErrors).length === 0) {
-      console.log('Cadastro:', formData);
-      // Aqui você implementará a lógica de cadastro
+      setLoading(true);
+      setApiError('');
+
+      try {
+        const { name, email, password } = formData;
+        const response = await authService.register({ name, email, password });
+        
+        console.log('Cadastro realizado com sucesso:', response);
+        
+        // Redireciona para o dashboard ou home
+        navigate('/dashboard');
+      } catch (err) {
+        console.error('Erro no cadastro:', err);
+        
+        if (err.status === 400) {
+          setApiError('E-mail já cadastrado');
+        } else if (err.status === 0) {
+          setApiError('Não foi possível conectar ao servidor');
+        } else {
+          setApiError(err.message || 'Erro ao criar conta. Tente novamente.');
+        }
+      } finally {
+        setLoading(false);
+      }
     } else {
       setErrors(newErrors);
     }
@@ -89,6 +116,15 @@ function Cadastrar() {
 
         {/* Card de Cadastro */}
         <div className="bg-white dark:bg-dark-bg-secondary rounded-2xl shadow-xl border border-light-border dark:border-dark-border p-8">
+          {/* Mensagem de Erro da API */}
+          {apiError && (
+            <div className="mb-6 p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg">
+              <p className="text-danger-700 dark:text-danger-300 text-sm font-medium">
+                ⚠️ {apiError}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-5">
             {/* Nome Completo */}
             <div>
@@ -206,9 +242,22 @@ function Cadastrar() {
             {/* Botão de Cadastro */}
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-lg font-semibold shadow-lg shadow-primary-500/30 dark:shadow-primary-500/20 transition-all transform hover:scale-[1.02]"
+              disabled={loading}
+              className={`w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-lg font-semibold shadow-lg shadow-primary-500/30 dark:shadow-primary-500/20 transition-all transform hover:scale-[1.02] ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Criar conta
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Criando conta...
+                </span>
+              ) : (
+                'Criar conta'
+              )}
             </button>
 
             {/* Divisor */}

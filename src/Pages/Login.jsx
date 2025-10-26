@@ -1,12 +1,16 @@
 import { useState } from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { authService } from '../services';
 
 function Login() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     email: '',
     password: '',
     rememberMe: false,
   });
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -14,12 +18,36 @@ function Login() {
       ...prev,
       [name]: type === 'checkbox' ? checked : value
     }));
+    // Limpa erro ao digitar
+    if (error) setError('');
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log('Login:', formData);
-    // Aqui você implementará a lógica de autenticação
+    setLoading(true);
+    setError('');
+
+    try {
+      const { email, password } = formData;
+      const response = await authService.login({ email, password });
+      
+      console.log('Login realizado com sucesso:', response);
+      
+      // Redireciona para o dashboard ou home
+      navigate('/dashboard');
+    } catch (err) {
+      console.error('Erro no login:', err);
+      
+      if (err.status === 401) {
+        setError('E-mail ou senha incorretos');
+      } else if (err.status === 0) {
+        setError('Não foi possível conectar ao servidor');
+      } else {
+        setError(err.message || 'Erro ao fazer login. Tente novamente.');
+      }
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -45,6 +73,15 @@ function Login() {
 
         {/* Card de Login */}
         <div className="bg-white dark:bg-dark-bg-secondary rounded-2xl shadow-xl border border-light-border dark:border-dark-border p-8">
+          {/* Mensagem de Erro */}
+          {error && (
+            <div className="mb-6 p-4 bg-danger-50 dark:bg-danger-900/20 border border-danger-200 dark:border-danger-800 rounded-lg">
+              <p className="text-danger-700 dark:text-danger-300 text-sm font-medium">
+                ⚠️ {error}
+              </p>
+            </div>
+          )}
+
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Email */}
             <div>
@@ -103,9 +140,22 @@ function Login() {
             {/* Botão de Login */}
             <button
               type="submit"
-              className="w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-lg font-semibold shadow-lg shadow-primary-500/30 dark:shadow-primary-500/20 transition-all transform hover:scale-[1.02]"
+              disabled={loading}
+              className={`w-full px-6 py-3 bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 text-white rounded-lg font-semibold shadow-lg shadow-primary-500/30 dark:shadow-primary-500/20 transition-all transform hover:scale-[1.02] ${
+                loading ? 'opacity-50 cursor-not-allowed' : ''
+              }`}
             >
-              Entrar
+              {loading ? (
+                <span className="flex items-center justify-center gap-2">
+                  <svg className="animate-spin h-5 w-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                  </svg>
+                  Entrando...
+                </span>
+              ) : (
+                'Entrar'
+              )}
             </button>
 
             {/* Divisor */}
