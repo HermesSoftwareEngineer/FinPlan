@@ -111,6 +111,7 @@ export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
         dados.numero_parcela = parseInt(formData.numero_parcela);
         dados.total_parcelas = parseInt(formData.total_parcelas);
       }
+      console.log("Criando dados: ", dados)
 
       await movimentoService.criar(dados);
       resetForm();

@@ -60,8 +60,8 @@ export default function ModalFiltroCategoria({ isOpen, onClose, categorias, cate
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+  <div className="fixed inset-0 bg-black/50 flex items-stretch justify-center z-50 p-4">
+      <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-2xl w-full max-h-[80vh] flex flex-col overflow-hidden">
         {/* Header */}
         <div className="bg-gradient-to-r from-primary-500 to-accent-500 p-6">
           <div className="flex items-center justify-between">
@@ -119,7 +119,7 @@ export default function ModalFiltroCategoria({ isOpen, onClose, categorias, cate
         </div>
 
         {/* Lista de Categorias */}
-        <div className="p-6 overflow-y-auto max-h-[400px]">
+        <div className="flex-1 overflow-y-auto p-6">
           {categoriasFiltradas.length === 0 ? (
             <div className="text-center py-8 text-light-text-secondary dark:text-dark-text-secondary">
               <p>Nenhuma categoria encontrada</p>

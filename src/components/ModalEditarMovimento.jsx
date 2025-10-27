@@ -131,7 +131,7 @@ export default function ModalEditarMovimento({ isOpen, movimento, onClose, onSuc
       };
 
       // Chama serviço de atualização, passando o campo impactar
-      await movimentoService.atualizar(movimento.id, payload, formData.impactar);
+      await movimentoService.atualizar(movimento.id, payload);
 
       onSuccess();
       onClose();
