@@ -89,6 +89,7 @@ const movimentoService = {
    */
   async criar(dados) {
     try {
+      console.log("Cadastrando movimento: ", dados)
       const response = await api.post('/movimentos', dados);
       return response.data;
     } catch (error) {
@@ -101,20 +102,11 @@ const movimentoService = {
    * Atualiza um movimento existente
    * @param {number} id - ID do movimento
    * @param {Object} dados - Dados a atualizar
-   * @param {string} [impactar] - Escopo de atualização para recorrentes
    * @returns {Promise} Movimento atualizado
    */
-  async atualizar(id, dados, impactar) {
+  async atualizar(id, dados) {
     try {
       let url = `/movimentos/${id}`;
-      if (impactar) {
-        url += `?impactar=${impactar}`;
-      }
-      // Remove impactar do body se presente
-      if (dados.impactar) {
-        const { impactar: _, ...body } = dados;
-        dados = body;
-      }
       const response = await api.put(url, dados);
       return response.data;
     } catch (error) {

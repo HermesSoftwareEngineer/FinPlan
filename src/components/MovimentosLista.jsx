@@ -1,6 +1,6 @@
 import MovimentosDiaSection from './MovimentosDiaSection';
 
-export default function MovimentosLista({ dadosMovimentos, formatarDataCompleta, getTipoAccent, getTipoIcon, getTipoColor, formatarValor, getNomeCategoria, getNomeConta, handleTogglePago, handleEdit, getNomeIconeCategoria }) {
+export default function MovimentosLista({ dadosMovimentos, formatarDataCompleta, getTipoAccent, getTipoIcon, getTipoColor, formatarValor, getNomeCategoria, getNomeConta, handleTogglePago, handleEdit, getNomeIconeCategoria, onNovoMovimento }) {
   const semMovimentos =
     !dadosMovimentos ||
     !dadosMovimentos.dias ||
@@ -18,7 +18,7 @@ export default function MovimentosLista({ dadosMovimentos, formatarDataCompleta,
           Adicione sua primeira receita ou despesa para começar a acompanhar o fluxo.
         </p>
         <button
-          onClick={handleEdit}
+          onClick={onNovoMovimento}
           className="rounded-full bg-primary-500 px-6 py-3 text-sm font-medium text-white transition hover:bg-primary-600"
         >
           Novo movimento
