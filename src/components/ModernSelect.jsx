@@ -50,10 +50,19 @@ export default function ModernSelect({ options, value, onChange, className = '',
   }
 
   return (
-    <div className={`relative w-full ${className}`} ref={ref}>
+    <div
+      className={`relative w-full ${className}`}
+      ref={ref}
+      style={{
+        border: '1px solid rgba(120, 120, 140, 0.15)',
+        borderRadius: '0.5rem',
+        boxShadow: '0 1px 4px 0 rgba(0,0,0,0.03)',
+        background: 'transparent',
+      }}
+    >
       <button
         type="button"
-        className={`flex items-center justify-between w-full px-3 py-2 bg-light-bg dark:bg-dark-bg border border-transparent rounded-md text-light-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-primary-500 transition cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
+        className={`flex items-center justify-between w-full px-3 py-2 bg-light-bg dark:bg-dark-bg border-none rounded-md text-light-text dark:text-dark-text focus:outline-none focus:ring-2 focus:ring-primary-500 transition cursor-pointer ${disabled ? 'opacity-50 cursor-not-allowed' : ''}`}
         onClick={() => !disabled && setOpen(!open)}
         disabled={disabled}
         aria-haspopup="listbox"
