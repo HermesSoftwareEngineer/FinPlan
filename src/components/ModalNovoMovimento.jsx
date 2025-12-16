@@ -3,6 +3,11 @@ import movimentoService from '../services/movimentoService';
 import categoriaService from '../services/categoriaService';
 import contaService from '../services/contaService';
 import { cartaoService } from '../services';
+import FormInput from './form/FormInput';
+import FormSelect from './form/FormSelect';
+import RadioGroup from './form/RadioGroup';
+import Checkbox from './form/Checkbox';
+import TextArea from './form/TextArea';
 
 export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
   const [formData, setFormData] = useState({
@@ -152,6 +157,11 @@ export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
 
   if (!isOpen) return null;
 
+  const formaPagamentoOptions = [
+    { label: '💰 Conta Bancária', value: 'conta' },
+    { label: '💳 Cartão de Crédito', value: 'cartao' },
+  ];
+
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
       <div className="bg-white dark:bg-dark-bg-secondary rounded-lg shadow-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
@@ -185,128 +195,72 @@ export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
           )}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Descrição */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Descrição *
-              </label>
-              <input
-                type="text"
+              <FormInput
+                label="Descrição"
                 required
                 value={formData.descricao}
                 onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 placeholder="Ex: Supermercado, Salário, etc."
                 disabled={loading}
               />
             </div>
 
-            {/* Tipo */}
-            <div>
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Tipo *
-              </label>
-              <select
-                required
-                value={formData.tipo}
-                onChange={(e) => {
-                  setFormData({ ...formData, tipo: e.target.value, categoria_id: '' });
-                  // Recarregar categorias ao mudar o tipo
-                }}
-                className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                disabled={loading}
-              >
-                <option value="despesa">📉 Despesa</option>
-                <option value="receita">📈 Receita</option>
-                <option value="transferencia">🔄 Transferência</option>
-              </select>
-            </div>
+            <FormSelect
+              label="Tipo"
+              required
+              value={formData.tipo}
+              onChange={(e) => {
+                setFormData({ ...formData, tipo: e.target.value, categoria_id: '' });
+              }}
+              disabled={loading}
+            >
+              <option value="despesa">📉 Despesa</option>
+              <option value="receita">📈 Receita</option>
+              <option value="transferencia">🔄 Transferência</option>
+            </FormSelect>
 
-            {/* Valor */}
-            <div>
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Valor *
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-light-text-secondary dark:text-dark-text-secondary">
-                  R$
-                </span>
-                <input
-                  type="number"
-                  required
-                  step="0.01"
-                  min="0"
-                  value={formData.valor}
-                  onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
-                  className="w-full pl-10 pr-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="0,00"
-                  disabled={loading}
-                />
-              </div>
-            </div>
+            <FormInput
+              label="Valor"
+              type="number"
+              required
+              step="0.01"
+              min="0"
+              value={formData.valor}
+              onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
+              placeholder="0,00"
+              disabled={loading}
+              icon="R$"
+            />
 
-            {/* Data */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Data *
-              </label>
-              <input
+              <FormInput
+                label="Data"
                 type="date"
                 required
                 value={formData.data_competencia}
                 onChange={(e) => setFormData({ ...formData, data_competencia: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 disabled={loading}
               />
             </div>
 
-            {/* Forma de Pagamento */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Forma de Pagamento *
-              </label>
-              <div className="flex gap-4">
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="forma_pagamento"
-                    value="conta"
-                    checked={formData.forma_pagamento === 'conta'}
-                    onChange={(e) => setFormData({ ...formData, forma_pagamento: e.target.value, cartao_id: '' })}
-                    className="text-primary-600 focus:ring-primary-500"
-                    disabled={loading}
-                  />
-                  <span className="text-sm text-light-text dark:text-dark-text">
-                    💰 Conta Bancária
-                  </span>
-                </label>
-                <label className="flex items-center gap-2 cursor-pointer">
-                  <input
-                    type="radio"
-                    name="forma_pagamento"
-                    value="cartao"
-                    checked={formData.forma_pagamento === 'cartao'}
-                    onChange={(e) => setFormData({ ...formData, forma_pagamento: e.target.value, conta_id: '' })}
-                    className="text-primary-600 focus:ring-primary-500"
-                    disabled={loading}
-                  />
-                  <span className="text-sm text-light-text dark:text-dark-text">
-                    💳 Cartão de Crédito
-                  </span>
-                </label>
-              </div>
+              <RadioGroup
+                label="Forma de Pagamento *"
+                name="forma_pagamento"
+                options={formaPagamentoOptions}
+                selectedValue={formData.forma_pagamento}
+                onChange={(e) => setFormData({ ...formData, forma_pagamento: e.target.value, conta_id: '', cartao_id: '' })}
+                disabled={loading}
+              />
             </div>
 
-            {/* Conta ou Cartão */}
             {formData.forma_pagamento === 'conta' ? (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                  Conta Bancária
-                </label>
-                <select
+                <FormSelect
+                  label="Conta Bancária"
                   value={formData.conta_id}
                   onChange={(e) => setFormData({ ...formData, conta_id: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={loading || loadingData}
                 >
                   <option value="">Selecione uma conta</option>
@@ -318,17 +272,14 @@ export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
                       }).format(conta.saldo_atual || 0)}
                     </option>
                   ))}
-                </select>
+                </FormSelect>
               </div>
             ) : (
               <div className="md:col-span-2">
-                <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                  Cartão de Crédito
-                </label>
-                <select
+                <FormSelect
+                  label="Cartão de Crédito"
                   value={formData.cartao_id}
                   onChange={(e) => setFormData({ ...formData, cartao_id: e.target.value })}
-                  className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                   disabled={loading || loadingData}
                 >
                   <option value="">Selecione um cartão</option>
@@ -340,22 +291,18 @@ export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
                       }).format(cartao.limite || 0)})
                     </option>
                   ))}
-                </select>
+                </FormSelect>
                 <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary mt-1">
                   Para cartões, a fatura será criada/atualizada automaticamente
                 </p>
               </div>
             )}
 
-            {/* Categoria */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Categoria
-              </label>
-              <select
+              <FormSelect
+                label="Categoria"
                 value={formData.categoria_id}
                 onChange={(e) => setFormData({ ...formData, categoria_id: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 disabled={loading || loadingData}
               >
                 <option value="">Selecione uma categoria</option>
@@ -364,113 +311,63 @@ export default function ModalNovoMovimento({ isOpen, onClose, onSuccess }) {
                     {getIconeEmoji(categoria.icone)} {categoria.nome}
                   </option>
                 ))}
-              </select>
+              </FormSelect>
             </div>
 
-            {/* Observação */}
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                Observação
-              </label>
-              <textarea
+              <TextArea
+                label="Observação"
                 value={formData.observacao}
                 onChange={(e) => setFormData({ ...formData, observacao: e.target.value })}
-                className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent resize-none"
-                rows="3"
                 placeholder="Informações adicionais sobre este movimento..."
                 disabled={loading}
               />
             </div>
 
-            {/* Checkboxes */}
-            <div className="md:col-span-2 space-y-3 p-4 bg-light-bg-secondary dark:bg-dark-bg-tertiary rounded-lg">
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={formData.pago}
-                  onChange={(e) => setFormData({ ...formData, pago: e.target.checked })}
-                  className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500 cursor-pointer"
-                  disabled={loading}
-                />
-                <div className="flex-1">
-                  <span className="text-sm font-medium text-light-text dark:text-dark-text group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">
-                    ✓ Marcar como pago
-                  </span>
-                  <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">
-                    O movimento já foi efetivado
-                  </p>
-                </div>
-              </label>
-
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={formData.recorrente}
-                  onChange={(e) => setFormData({ ...formData, recorrente: e.target.checked })}
-                  className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500 cursor-pointer"
-                  disabled={loading}
-                />
-                <div className="flex-1">
-                  <span className="text-sm font-medium text-light-text dark:text-dark-text group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">
-                    🔄 Movimento recorrente
-                  </span>
-                  <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">
-                    Se repete mensalmente
-                  </p>
-                </div>
-              </label>
-
-              <label className="flex items-center gap-3 cursor-pointer group">
-                <input
-                  type="checkbox"
-                  checked={formData.parcelado}
-                  onChange={(e) => setFormData({ ...formData, parcelado: e.target.checked })}
-                  className="w-5 h-5 text-primary-600 rounded focus:ring-primary-500 cursor-pointer"
-                  disabled={loading}
-                />
-                <div className="flex-1">
-                  <span className="text-sm font-medium text-light-text dark:text-dark-text group-hover:text-primary-600 dark:group-hover:text-primary-400 transition">
-                    📅 Movimento parcelado
-                  </span>
-                  <p className="text-xs text-light-text-secondary dark:text-dark-text-secondary">
-                    Dividido em várias parcelas
-                  </p>
-                </div>
-              </label>
+            <div className="md:col-span-2 space-y-1 p-2 bg-light-bg-secondary dark:bg-dark-bg-tertiary rounded-lg">
+              <Checkbox
+                label="✓ Marcar como pago"
+                description="O movimento já foi efetivado"
+                checked={formData.pago}
+                onChange={(e) => setFormData({ ...formData, pago: e.target.checked })}
+                disabled={loading}
+              />
+              <Checkbox
+                label="🔄 Movimento recorrente"
+                description="Se repete mensalmente"
+                checked={formData.recorrente}
+                onChange={(e) => setFormData({ ...formData, recorrente: e.target.checked })}
+                disabled={loading}
+              />
+              <Checkbox
+                label="📅 Movimento parcelado"
+                description="Dividido em várias parcelas"
+                checked={formData.parcelado}
+                onChange={(e) => setFormData({ ...formData, parcelado: e.target.checked })}
+                disabled={loading}
+              />
             </div>
 
-            {/* Campos de Parcelamento */}
             {formData.parcelado && (
               <>
-                <div>
-                  <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                    Número da Parcela *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={formData.numero_parcela}
-                    onChange={(e) => setFormData({ ...formData, numero_parcela: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    disabled={loading}
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-light-text-secondary dark:text-dark-text-secondary mb-2">
-                    Total de Parcelas *
-                  </label>
-                  <input
-                    type="number"
-                    min="1"
-                    required
-                    value={formData.total_parcelas}
-                    onChange={(e) => setFormData({ ...formData, total_parcelas: e.target.value })}
-                    className="w-full px-3 py-2 rounded-lg border border-light-border dark:border-dark-border bg-light-bg dark:bg-dark-bg text-light-text dark:text-dark-text focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                    disabled={loading}
-                  />
-                </div>
+                <FormInput
+                  label="Número da Parcela"
+                  type="number"
+                  min="1"
+                  required
+                  value={formData.numero_parcela}
+                  onChange={(e) => setFormData({ ...formData, numero_parcela: e.target.value })}
+                  disabled={loading}
+                />
+                <FormInput
+                  label="Total de Parcelas"
+                  type="number"
+                  min="1"
+                  required
+                  value={formData.total_parcelas}
+                  onChange={(e) => setFormData({ ...formData, total_parcelas: e.target.value })}
+                  disabled={loading}
+                />
               </>
             )}
           </div>

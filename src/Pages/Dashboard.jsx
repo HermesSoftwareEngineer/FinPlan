@@ -161,6 +161,32 @@ function Dashboard() {
     return dashboardData.economia_mes_atual / dashboardData.receitas_mes_atual;
   }, [dashboardData]);
 
+  const getIconeEmoji = (iconeValue) => {
+    const icones = {
+      restaurant: '🍽️',
+      shopping_cart: '🛒',
+      home: '🏠',
+      directions_car: '🚗',
+      favorite: '❤️',
+      school: '📚',
+      sports_esports: '🎮',
+      work: '💼',
+      attach_money: '💰',
+      savings: '💵',
+      credit_card: '💳',
+      local_grocery_store: '🏪',
+      fitness_center: '💪',
+      phone: '📱',
+      lightbulb: '💡',
+      pets: '🐾',
+      flight: '✈️',
+      celebration: '🎉',
+      checkroom: '👔',
+      local_pharmacy: '💊',
+    };
+    return icones[iconeValue] || '📂';
+  };
+
   const economiaValor = dashboardData?.economia_mes_atual ?? null;
   const economiaValorPositivo = (economiaValor ?? 0) >= 0;
   const periodoGrafico = dashboardData?.periodo_grafico;
@@ -372,7 +398,7 @@ function Dashboard() {
                         <div key={categoriaKey} className="space-y-2">
                           <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2">
-                              <span className="text-xl" aria-hidden="true">{categoria.categoria_icone || '🏷️'}</span>
+                              <span className="text-xl" aria-hidden="true">{getIconeEmoji(categoria.categoria_icone)}</span>
                               <span className="text-sm font-medium text-light-text dark:text-dark-text">
                                 {categoria.categoria_nome}
                               </span>
